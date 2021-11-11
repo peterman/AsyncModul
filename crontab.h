@@ -1,16 +1,24 @@
 void cron1() {
   //Your Cronjob action here
-  Serial.println("Cronjob 1 active");
+  
 }
 
 void cron2() {
-  //Your Cronjob action here
-  Serial.println("Cronjob 2 active");
+  sensor.clearFields();
+  sensor.addField("temperatur", bmp.readTemperature());
+  sensor.addField("druck", bmp.readPressure()/100);
+  Serial.print("Writing: ");
+  Serial.println(influx_client.pointToLineProtocol(sensor));
+  // Write point
+  if (!influx_client.writePoint(sensor)) {
+    Serial.print("InfluxDB write failed: ");
+    Serial.println(influx_client.getLastErrorMessage());
+  }
 }
 
 void cron3() {
   //Your Cronjob action here
-  Serial.println("Cronjob 3 active");
+  
 }
 
 void do_cronjobs() {

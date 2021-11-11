@@ -22,11 +22,11 @@ void saveConfiguration(const char *filename, const Settings &config) {
 }
 
 void readsettings() {
-  File file = SPIFFS.open(settingsfile, "r");
+  
 
-  if (!file)
+  if (!SPIFFS.exists(settingsfile))
     {
-      Serial.println("There was an error opening the file");
+      Serial.println("File not found");
       Serial.println("create new File");
       saveConfiguration(settingsfile, settings);
       return;
@@ -34,6 +34,7 @@ void readsettings() {
 
     else
     {
+      File file = SPIFFS.open(settingsfile, "r");
       Serial.println("File opened!");
 
       StaticJsonDocument<512> doc;
@@ -54,9 +55,10 @@ void readsettings() {
         strcpy(settings.edit_pass, doc["editpass"]);
       }
       Serial.println("");
+      file.close();
     }
 
-    file.close();
+    
   }
 
 // Prints the content of a file to the Serial
@@ -112,7 +114,6 @@ void Save_Wifiscan_Result(){
       json += ",\"bssid\":\""+WiFi.BSSIDstr(i)+"\"";
       json += ",\"channel\":\""+String(WiFi.channel(i))+"\"";
       json += ",\"secure\":\""+String(WiFi.encryptionType(i))+"\"";
-      json += ",\"hidden\":\""+String(WiFi.isHidden(i)?"true":"false")+"\"";
       json += "}";
     }
   }

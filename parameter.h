@@ -1,6 +1,6 @@
 struct Settings {
-  char ssid[15] = "devwifi";
-  char pass[15] = "devwifi1";
+  char ssid[15] = "Weissig2011";
+  char pass[15] = "VereinsHaus";
   char host[15] = "asm-connect";
   char edit_user[10] = "admin";
   char edit_pass[10] = "admin";
@@ -15,8 +15,20 @@ struct Cronjob {
   long t3;
 };
 
+struct Influx {
+  char url[40] = "http://iot.pfeiffer-privat.de:8086";
+  char token[100] = "PBzjW8lC34KJS-JZZepZriH63TGNm1jH93wpKsDQuW-q7XgxCVY5nYcmYE3OVn5ZjK43B6ygvHppanMwXSSjmw==";
+  char org[30] = "MyServer";
+  char bucket[30] = "Sensor Vereinshaus";
+};
+
 const char *settingsfile = "/settings.json";
 const char *wifinets = "/wifinets.json";
 
+Influx influxdb;
 Settings settings;
 Cronjob cronjob;
+Adafruit_BMP280 bmp;
+
+InfluxDBClient influx_client(influxdb.url, influxdb.org, influxdb.bucket, influxdb.token);
+Point sensor("Sensor 1");

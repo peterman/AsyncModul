@@ -13,6 +13,10 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include <ArduinoJson.h>;
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_BMP280.h>
+#include <InfluxDbClient.h>
 
 // SKETCH BEGIN
 AsyncWebServer server(80);
@@ -22,6 +26,8 @@ AsyncEventSource events("/events");
 #include "parameter.h";
 #include "sockets.h";
 #include "functions.h";
+#include "influxdb.h";
+#include "ota.h";
 #include "crontab.h";
 
 void setup(){
@@ -31,7 +37,9 @@ void setup(){
   Serial.println();
   
   SPIFFS.begin();
-  delay(100);
+  bmp.begin(0x76);
+  
+  delay(500);
   readsettings();  
   Save_Wifiscan_Result();
   
@@ -46,25 +54,10 @@ void setup(){
     WiFi.begin(settings.ssid, settings.pass);
   }
   
-
-  //Send OTA events to the browser
-  ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
-  ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    char p[32];
-    sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
-    events.send(p, "ota");
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    if(error == OTA_AUTH_ERROR) events.send("Auth Failed", "ota");
-    else if(error == OTA_BEGIN_ERROR) events.send("Begin Failed", "ota");
-    else if(error == OTA_CONNECT_ERROR) events.send("Connect Failed", "ota");
-    else if(error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
-    else if(error == OTA_END_ERROR) events.send("End Failed", "ota");
-  });
-  ArduinoOTA.setHostname(settings.host);
-  ArduinoOTA.begin();
-
+  Serial.println(WiFi.localIP());
+  
+  SetupOTA();
+  
   MDNS.addService("http","tcp",80);
 
   SPIFFS.begin();
@@ -166,7 +159,16 @@ server.on("/setwifi", HTTP_GET, [](AsyncWebServerRequest *request){
 
 
 //----------------------------------------------------------------------------------------
-  
+  // Check server connection
+  if (influx_client.validateConnection()) {
+    Serial.print("Connected to InfluxDB: ");
+    Serial.println(influx_client.getServerUrl());
+  } else {
+    Serial.print("InfluxDB connection failed: ");
+    Serial.println(influx_client.getLastErrorMessage());
+  }
+
+//---------------------------------------------------------------------------------------
 
   Serial.println("Setup done");
   server.begin();
