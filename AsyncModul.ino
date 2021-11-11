@@ -62,7 +62,7 @@ void setup(){
     else if(error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
     else if(error == OTA_END_ERROR) events.send("End Failed", "ota");
   });
-  ArduinoOTA.setHostname(hostName);
+  ArduinoOTA.setHostname(settings.host);
   ArduinoOTA.begin();
 
   MDNS.addService("http","tcp",80);
@@ -78,9 +78,9 @@ void setup(){
   server.addHandler(&events);
 
 #ifdef ESP32
-  server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
+  server.addHandler(new SPIFFSEditor(SPIFFS, settings.edit_user,settings.edit_pass));
 #elif defined(ESP8266)
-  server.addHandler(new SPIFFSEditor(http_username,http_password));
+  server.addHandler(new SPIFFSEditor(settings.edit_user,settings.edit_pass));
 #endif
   
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
