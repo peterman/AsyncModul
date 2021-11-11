@@ -8,8 +8,8 @@ struct Settings {
 
 struct Cronjob {
   int c1 = 10;  // 10 sek.
-  int c2 = 30;  // 30 sek.
-  int c3 = 300; // 300 sek.
+  int c2 = 300; // 300 sek.
+  int c3 = 600; // 300 sek.
   long t1;
   long t2;
   long t3;

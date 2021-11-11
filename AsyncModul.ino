@@ -13,8 +13,8 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include <ArduinoJson.h>;
-#include <Wire.h>
-#include <SPI.h>
+//#include <Wire.h>
+//#include <SPI.h>
 #include <Adafruit_BMP280.h>
 #include <InfluxDbClient.h>
 
