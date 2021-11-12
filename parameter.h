@@ -3,7 +3,7 @@ struct Settings {
   char pass[15] = "VereinsHaus";
   char host[15] = "asm-connect";
   char edit_user[10] = "admin";
-  char edit_pass[10] = "admin";
+  char edit_pass[10] = "admin";  
 };
 
 struct Cronjob {
@@ -21,6 +21,11 @@ struct Influx {
   char org[30] = "MyServer";
   char bucket[30] = "Sensor Vereinshaus";
 };
+
+#define ONBOARD_LED  2
+
+           
+  
 
 const char *settingsfile = "/settings.json";
 const char *wifinets = "/wifinets.json";

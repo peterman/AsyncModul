@@ -14,6 +14,7 @@ void cron2() {
     Serial.print("InfluxDB write failed: ");
     Serial.println(influx_client.getLastErrorMessage());
   }
+  
 }
 
 void cron3() {

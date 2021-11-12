@@ -18,6 +18,7 @@
 #include <Adafruit_BMP280.h>
 #include <InfluxDbClient.h>
 
+
 // SKETCH BEGIN
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -35,6 +36,7 @@ void setup(){
   Serial.setDebugOutput(true);
    // Serial.setDebugOutput(true);
   Serial.println();
+  pinMode(ONBOARD_LED,OUTPUT);
   
   SPIFFS.begin();
   bmp.begin(0x76);
@@ -42,6 +44,7 @@ void setup(){
   delay(500);
   readsettings();  
   Save_Wifiscan_Result();
+  
   
   WiFi.mode(WIFI_STA); 
   delay(100);
@@ -171,6 +174,7 @@ server.on("/setwifi", HTTP_GET, [](AsyncWebServerRequest *request){
 //---------------------------------------------------------------------------------------
 
   Serial.println("Setup done");
+  digitalWrite(ONBOARD_LED,HIGH);
   server.begin();
 
 }
